@@ -1,5 +1,6 @@
 package com.ensemble.ensemble_core.service;
 
+import com.ensemble.ensemble_core.model.Cuisine;
 import com.ensemble.ensemble_core.model.Dish;
 import com.ensemble.ensemble_core.model.Restaurant;
 import com.ensemble.ensemble_core.repository.DishesRepository;
@@ -13,6 +14,8 @@ public class DishServiceImpl implements DishService{
 
     @Autowired
     private DishesRepository dishesRepository;
+    @Autowired
+    private CuisineService cuisineService;
 
     @Override
     public List<Dish> getAllDishes() {
@@ -21,6 +24,10 @@ public class DishServiceImpl implements DishService{
 
     @Override
     public Dish addDish(Dish dish) {
+        if(null!=dish.getCuisine()){
+            Cuisine cuisine = cuisineService.getCuisineByCuisineName(dish.getCuisine().getCuisineName());
+            if(null!=cuisine) dish.setCuisine(cuisine);
+        }
         return dishesRepository.save(dish);
     }
 

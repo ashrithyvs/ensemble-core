@@ -2,6 +2,7 @@ package com.ensemble.ensemble_core.controller;
 
 
 import com.ensemble.ensemble_core.model.Coupon;
+import com.ensemble.ensemble_core.model.Location;
 import com.ensemble.ensemble_core.model.Restaurant;
 import com.ensemble.ensemble_core.repository.CouponRepository;
 import com.ensemble.ensemble_core.service.RestaurantService;
@@ -27,5 +28,10 @@ public class RestaurantController {
     @PostMapping
     public String addRestaurant(@RequestBody Restaurant restaurant){
         return restaurantService.addRestaurant(restaurant);
+    }
+
+    @GetMapping("/location")
+    public List<Restaurant> getRestaurantsByLocationName(@RequestBody Location location){
+        return restaurantService.getRestaurantsByLocationName(location.getLocationName());
     }
 }

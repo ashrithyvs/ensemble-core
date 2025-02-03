@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.net.URL;
 import java.util.List;
 
 @Getter
@@ -20,10 +21,23 @@ public class Dish {
     private int dishId;
     private String dishName;
     private String description;
+    private URL dishImage;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinColumn(name = "cuisineId", referencedColumnName = "cuisineId")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "cuisineId",
+            referencedColumnName = "cuisineId"
+    )
     private Cuisine cuisine;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            },
+            mappedBy = "menuItems")
+    @JsonIgnore
+    private List<Restaurant> availableAt;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
@@ -32,5 +46,5 @@ public class Dish {
             },
             mappedBy = "dishesLiked")
     @JsonIgnore
-    private List<Restaurant> restaurants;
+    private List<Restaurant> popularAt;
 }

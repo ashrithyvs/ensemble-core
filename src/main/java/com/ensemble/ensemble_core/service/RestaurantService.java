@@ -9,6 +9,6 @@ import java.util.List;
 public interface RestaurantService {
     public List<Restaurant> getAllRestaurants();
     public String addRestaurant(Restaurant restaurant);
-//    public Restaurant getRestaurantById(int restaurantId);
-//    public List<Restaurant> getAllRestaurantById(int restaurantId);
+    public Restaurant getRestaurantById(int restaurantId);
+    public List<Restaurant> getRestaurantsByLocationName(String location);
 }

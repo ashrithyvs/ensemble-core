@@ -1,5 +1,6 @@
 package com.ensemble.ensemble_core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -17,7 +18,14 @@ public class Cuisine {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cuisine_sequence")
     @Id
     private int cuisineId;
-    private String title;
-    @ManyToMany(mappedBy = "cuisinesAvailable")
+    private String cuisineName;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            },
+            mappedBy = "cuisinesAvailable")
+    @JsonIgnore
     private List<Restaurant> availableAt;
 }

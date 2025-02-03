@@ -16,7 +16,7 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_sequence")
     @Id
     private int locationId;
-    private String location;
+    private String locationName;
     private String address;
 //    private List<Event> events;
 }

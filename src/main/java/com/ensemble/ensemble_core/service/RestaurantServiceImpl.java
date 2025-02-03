@@ -1,13 +1,9 @@
 package com.ensemble.ensemble_core.service;
 
-import com.ensemble.ensemble_core.model.Coupon;
-import com.ensemble.ensemble_core.model.Dish;
-import com.ensemble.ensemble_core.model.Location;
-import com.ensemble.ensemble_core.model.Restaurant;
-import com.ensemble.ensemble_core.repository.CouponRepository;
-import com.ensemble.ensemble_core.repository.DishesRepository;
-import com.ensemble.ensemble_core.repository.LocationRepository;
-import com.ensemble.ensemble_core.repository.RestaurantRepository;
+import com.ensemble.ensemble_core.model.*;
+import com.ensemble.ensemble_core.repository.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +13,8 @@ import java.util.List;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
+
+    private static final Logger logger = LogManager.getLogger(RestaurantServiceImpl.class);
 
     @Autowired
     private RestaurantRepository restaurantRepository;
@@ -30,6 +28,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Autowired
     private DishesRepository dishesRepository;
 
+    @Autowired
+    private CuisineRepository cuisineRepository;
+
 
     @Override
     public List<Restaurant> getAllRestaurants(){
@@ -37,6 +38,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     public Restaurant getRestaurantById(int restaurantId){ return restaurantRepository.findById(restaurantId).orElseThrow(()-> new IllegalArgumentException("Restaurant Not Found"));}
+
+    @Override
+    public List<Restaurant> getRestaurantsByLocationName(String location) {
+        return restaurantRepository.findRestaurantsByLocationName(location);
+    }
 
     @Override
     public String addRestaurant(Restaurant restaurant){
@@ -55,7 +61,18 @@ public class RestaurantServiceImpl implements RestaurantService {
             });
             restaurant.setDishesLiked(dflist);
         }
-        Restaurant _restaurant = restaurantRepository.save(restaurant);
+
+        if(!restaurant.getCuisinesAvailable().isEmpty()){
+            List<Cuisine> cflist= new ArrayList<>();
+            restaurant.getCuisinesAvailable().forEach(c ->{
+                Cuisine cf = cuisineRepository.findOneByCuisineName(c.getCuisineName());
+                if(null==cf) cuisineRepository.save(c);
+                cflist.add(cf);
+            });
+            restaurant.setCuisinesAvailable(cflist);
+        }
+
+       Restaurant _restaurant = restaurantRepository.save(restaurant);
 
         if(!restaurant.getCouponsAvailable().isEmpty()){
             restaurant.getCouponsAvailable().forEach(c ->{

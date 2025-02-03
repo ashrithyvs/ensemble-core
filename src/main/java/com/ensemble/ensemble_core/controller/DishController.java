@@ -1,12 +1,9 @@
 package com.ensemble.ensemble_core.controller;
 
 
-import com.ensemble.ensemble_core.model.Coupon;
 import com.ensemble.ensemble_core.model.Dish;
 import com.ensemble.ensemble_core.model.Restaurant;
-import com.ensemble.ensemble_core.repository.DishesRepository;
 import com.ensemble.ensemble_core.repository.RestaurantRepository;
-import com.ensemble.ensemble_core.service.CouponService;
 import com.ensemble.ensemble_core.service.DishService;
 import com.ensemble.ensemble_core.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -33,7 +28,7 @@ public class DishController {
     private DishService dishService;
 
     @PostMapping("/restaurant/{restaurantId}/dishes")
-    public ResponseEntity<Dish> addTag(@PathVariable(value = "restaurantId") int restaurantId, @RequestBody Dish dishRequest) {
+    public ResponseEntity<Dish> addDish(@PathVariable(value = "restaurantId") int restaurantId, @RequestBody Dish dishRequest) {
         Dish dish = restaurantRepository.findById(restaurantId).map(restaurant -> {
             //get dish if exists in DB
             Dish _dish = dishService.getDishByDishName(dishRequest.getDishName());
@@ -44,17 +39,22 @@ public class DishController {
 
             //if dish exists in DB but not in restaurant, add in and save the restaurant.
             if (null!=_dish) {
-                restaurant.addDish(_dish);
+                restaurant.addDishToDishesLiked(_dish);
                 restaurantService.addRestaurant(restaurant);
                 return _dish;
             }
 
             // if the dish doesn't exists in DB, add and create a new Dish
-            restaurant.addDish(dishRequest);
+            restaurant.addDishToDishesLiked(dishRequest);
             return dishService.addDish(dishRequest);
         }).orElseThrow(() -> new IllegalArgumentException("No Restaurant is found with id = " + restaurantId));
 
         return new ResponseEntity<>(dish, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/dish")
+    public ResponseEntity<Dish> addDish(@RequestBody Dish dishRequest){
+        return new ResponseEntity<>(dishService.addDish(dishRequest), HttpStatus.CREATED);
     }
 
     @GetMapping("/dish")
