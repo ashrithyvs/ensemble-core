@@ -1,5 +1,6 @@
 package com.ensemble.ensemble_core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -23,6 +24,19 @@ public class Event {
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "locationId", referencedColumnName = "locationId")
     private Location venue;
-    private String organizer;
-    private List<String> usersAttending;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "uid", referencedColumnName = "uid")
+    private EventOrganizer organizer;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(
+            name = "eventAttendees",
+            joinColumns = @JoinColumn(name = "uid"),
+            inverseJoinColumns = @JoinColumn(name = "eventId"))
+    private List<User> attendees;
 }

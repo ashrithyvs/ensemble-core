@@ -22,6 +22,10 @@ public class Restaurant {
     private String restaurantName;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "uid", referencedColumnName = "uid")
+    private RestaurantOwner ownedBy;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "locationId", referencedColumnName = "locationId")
     private Location location;
     private String url;
